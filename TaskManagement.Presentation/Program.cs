@@ -35,7 +35,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddAuthorization();
-
+builder.Services.AddMemoryCache();
 builder.Services.AddControllers();
 var app = builder.Build();
 
@@ -46,11 +46,6 @@ using (var scope = app.Services.CreateScope())
     DbSeeder.Seed(db);
 }
 
-
-//builder.Services.AddExceptionHandler(options =>
-//{
-//    options.ExceptionHandlingPath = "/error";
-//});
 app.UseMiddleware<ExceptionHandlerMiddleware>();
 
 // Configure the HTTP request pipeline.

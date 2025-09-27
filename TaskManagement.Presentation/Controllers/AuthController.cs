@@ -1,6 +1,8 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
+using TaskManagement.Application;
 using TaskManagement.Application.Dtos;
 
 namespace TaskManagement.Presentation.Controllers
@@ -9,10 +11,14 @@ namespace TaskManagement.Presentation.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-       
+        private readonly IMemoryCache _cache;
         private readonly IMediator _mediator;
 
-        public AuthController(IMediator mediator) => _mediator = mediator;
+        public AuthController(IMediator mediator, IMemoryCache memoryCache)
+        {
+            _mediator = mediator;
+            _cache=memoryCache;
+        }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterUserCommand req)
@@ -35,6 +41,16 @@ namespace TaskManagement.Presentation.Controllers
         [Authorize]
         public async Task<IActionResult> GetAllUsers()
         {
+            bool isAvailable = _cache.TryGetValue("users", out Response users);
+            if (!isAvailable)
+            {
+                users = await _mediator.Send(new GetAllUserQuery());
+                var cacheEntryOptions = new MemoryCacheEntryOptions()
+                    .SetSlidingExpiration(TimeSpan.FromMinutes(2))
+                    .SetAbsoluteExpiration(TimeSpan.FromMinutes(10))
+                    .SetPriority(CacheItemPriority.Normal);
+                _cache.Set("users", users, cacheEntryOptions);
+            }
             return Ok(await _mediator.Send(new GetAllUserQuery()));
         }
     }
