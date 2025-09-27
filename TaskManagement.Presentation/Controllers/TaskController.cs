@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TaskManagement.Application.Dtos;
+using TaskManagement.Domain.Entities;
 
 namespace TaskManagement.Presentation.Controllers
 {
@@ -36,6 +37,7 @@ namespace TaskManagement.Presentation.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "ADMIN")]
         public async Task<IActionResult> Delete(Guid id)
         {
             var task = await _mediator.Send(new DeleteTaskCommand(id));
