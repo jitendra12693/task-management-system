@@ -50,6 +50,23 @@ The response will be a standardized DTO:
 3. Build the solution.  
 4. Run the application and use the provided handlers via MediatR.  
 
+## Clean Architecture Explanation
+
+This solution follows the principles of **Clean Architecture** to ensure maintainability, scalability, and testability. The main concepts are:
+
+- **Separation of Concerns:** The system is divided into layers, each with distinct responsibilities. Business logic is isolated from infrastructure and presentation.
+- **Dependency Inversion:** Core business logic (domain and application layers) does not depend on external frameworks or technologies. Instead, dependencies are injected via interfaces.
+- **Testability:** By decoupling business logic from infrastructure, each layer can be tested independently.
+- **Flexibility:** Infrastructure (e.g., database, web frameworks) can be swapped without affecting core logic.
+
+### Layered Structure
+
+- **Domain Layer:** Contains core business entities and interfaces (e.g., `TaskItem`, `ITaskRepository`). No dependencies on other layers.
+- **Application Layer:** Implements use cases (CQRS handlers, DTOs) and orchestrates business logic. Depends only on domain interfaces.
+- **Infrastructure Layer:** Implements domain interfaces (e.g., repository implementations, data access). Depends on application and domain layers.
+- **Presentation Layer:** Handles user interaction (e.g., API controllers). Depends on application layer.
+
+
 ## License  
 
 No License.
