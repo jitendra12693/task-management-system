@@ -1,4 +1,6 @@
 ﻿using System.Diagnostics;
+using System.Net;
+using System.Text.Json;
 
 namespace TaskManagement.Presentation.Common
 {
@@ -21,14 +23,43 @@ namespace TaskManagement.Presentation.Common
                 await _next(context);
                 sw.Stop();
                 _logger.LogInformation("Finished handling request. Status Code: {StatusCode}. Time taken: {ElapsedMilliseconds} ms", context.Response.StatusCode, sw.ElapsedMilliseconds);
-            }   
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                await context.Response.WriteAsync(JsonSerializer.Serialize(new
+                {
+                    status = context.Response.StatusCode,
+                    error = "Unauthorized",
+                    message = ex.Message
+                }));
+            }
+            catch (KeyNotFoundException ex)
+            {
+                context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+                await context.Response.WriteAsync(JsonSerializer.Serialize(new
+                {
+                    status = context.Response.StatusCode,
+                    error = "Not Found",
+                    message = ex.Message
+                }));
+            }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An unhandled exception occurred.");
-                context.Response.StatusCode = 500;
+                _logger.LogError(ex, "Unhandled exception occurred");
+
                 context.Response.ContentType = "application/json";
-                var response = new { message = "An unexpected error occurred. Please try again later." };
-                await context.Response.WriteAsJsonAsync(response);
+                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+
+                var response = new
+                {
+                    status = context.Response.StatusCode,
+                    error = "Internal Server Error",
+                    message = ex.Message
+                };
+
+                await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+
             }
         }
     }

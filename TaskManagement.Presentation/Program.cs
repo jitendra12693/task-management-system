@@ -4,6 +4,7 @@ using System;
 using System.Text;
 using TaskManagement.Application;
 using TaskManagement.Infrastructure;
+using TaskManagement.Presentation.Common;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -50,7 +51,7 @@ using (var scope = app.Services.CreateScope())
 //{
 //    options.ExceptionHandlingPath = "/error";
 //});
-//app.UseMiddleware<ExceptionHandlerMiddleware>();
+app.UseMiddleware<ExceptionHandlerMiddleware>();
 
 // Configure the HTTP request pipeline.
 app.UseSwagger();
