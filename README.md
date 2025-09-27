@@ -67,6 +67,36 @@ This solution follows the principles of **Clean Architecture** to ensure maintai
 - **Presentation Layer:** Handles user interaction (e.g., API controllers). Depends on application layer.
 
 
+## ExceptionHandlerMiddleware
+
+The solution uses ASP.NET Core's `ExceptionHandlerMiddleware` to provide centralized exception handling for HTTP requests. This middleware intercepts unhandled exceptions, logs them, and returns a consistent error response to the client. 
+
+**Configuration Tips:**
+- Ensure you configure the middleware with either an `ExceptionHandlingPath` or a custom `ExceptionHandler` delegate.
+- You can set this up in your application startup using:
+  
+- This approach improves reliability and user experience by preventing application crashes and exposing meaningful error information.
+
+## In-Memory Caching
+
+The solution can leverage ASP.NET Core's **in-memory caching** to improve performance and reduce database load for frequently accessed data. In-memory caching stores data in the server's memory, allowing for fast retrieval without repeated database queries.
+
+**How to Use:**
+- Register the cache service in your application startup:
+  
+- - Inject `IMemoryCache` into your services or handlers.
+- Use `Set` and `TryGetValue` methods to store and retrieve cached data.
+
+**Example:**
+**Benefits:**
+- Reduces database calls for frequently requested data.
+- Improves response times for users.
+- Simple to configure and use for small to medium datasets.
+
+## License  
+
+No License.
+
 ## License  
 
 No License.
